@@ -15,9 +15,33 @@ public class Roster {
 		this.degree = degree;
 		this.graduateLevel = graduateLevel;
 		this.logIn = logIn;
-		}
+	}
+	
 	@Override
 	public String toString() {
 		return Id + firstName + lastName + degree + graduateLevel + logIn;
+	}
+	
+	public int getId() {
+		return this.Id;
+	}
+	
+	public String getFirstName() {
+		return this.firstName;
+	}
+	public String getLastName() {
+		return this.lastName;
+	}
+	
+	public String getDegree() {
+		return this.degree;
+	}
+	
+	public String getGraduateLevel() {
+		return this.graduateLevel;
+	}
+	
+	public String getLogIn() {
+		return this.logIn;
 	}
 }

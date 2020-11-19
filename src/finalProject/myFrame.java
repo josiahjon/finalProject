@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.io.*;
 
 import javax.swing.JFileChooser;
+import javax.swing.table.DefaultTableModel;
 
 public class myFrame extends JFrame implements ActionListener{
 	
@@ -19,6 +20,9 @@ public class myFrame extends JFrame implements ActionListener{
 	JMenuItem save;
 	JMenuItem plotData;
 	JMenuItem aboutTeam;
+	DefaultTableModel table;
+	JTable rosterTable;
+	JScrollPane rosterScrollPane;
 	File file;
 	Scanner fileIn;
 	int response;
@@ -61,6 +65,11 @@ public class myFrame extends JFrame implements ActionListener{
 		
 		this.setJMenuBar(menuBar);
 		
+		String columnNames[] = {"ID", "First Name", "Last Name", "Program", "Level", "ASURITE"};
+		table = new DefaultTableModel(columnNames, 0);
+		rosterTable = new JTable(table);
+		rosterScrollPane = new JScrollPane(rosterTable);
+		
 		this.setVisible(true);
 	}
 	
@@ -90,6 +99,7 @@ public class myFrame extends JFrame implements ActionListener{
 			            line = br.readLine();
 			         }
 				br.close();
+				createRosterTable(roster);
 				} catch (FileNotFoundException f) {
 					f.printStackTrace();
 				} catch (IOException e1) {
@@ -124,5 +134,26 @@ public class myFrame extends JFrame implements ActionListener{
 		return new Roster(Id, firstName, lastName, degree, graduateLevel, logIn);
 	}
 	
+	private void createRosterTable(List<Roster> roster) {
+		
+		add(rosterScrollPane);
+		for(int i = 0; i < roster.size(); i++) {
+			String id = "" + roster.get(i).getId();
+			String firstName = roster.get(i).getFirstName();
+			String lastName = roster.get(i).getLastName();
+			String degree = roster.get(i).getDegree();
+			String gradLevel = roster.get(i).getGraduateLevel();
+			String login = roster.get(i).getLogIn();
+			
+			Object[] data = {id, firstName, lastName, degree, gradLevel, login};
+			table.addRow(data);
+		}
+		revalidate();
+	}
+	
+	private void createAttendance(String date) {
+		
+		
+	}
 	
 }
