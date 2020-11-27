@@ -119,7 +119,7 @@ public class myFrame extends JFrame implements ActionListener{
 			
 		}
 		if(e.getSource()==save) {
-			System.out.println("clicked save");
+			saveRoster();
 		}
 		if(e.getSource()==plotData) {
 			System.out.println("clicked plotdata");
@@ -229,6 +229,50 @@ public class myFrame extends JFrame implements ActionListener{
 		
 		loadAttendance(attendanceDays);
 		
+	}
+	
+	private void saveRoster() {
+		
+		String userInput = JOptionPane.showInputDialog("Type in a file name (be sure to add .csv): ");
+		try
+		{
+			FileWriter csvFile = new FileWriter(userInput);
+			csvFile.append("ID");
+			csvFile.append(delimiter);
+			csvFile.append("First Name");
+			csvFile.append(delimiter);
+			csvFile.append("Last Name");
+			csvFile.append(delimiter);
+			csvFile.append("Program");
+			csvFile.append(delimiter);
+			csvFile.append("Level");
+			csvFile.append(delimiter);
+			csvFile.append("ASURITE");
+			csvFile.append(delimiter);
+			csvFile.append("Date");
+			csvFile.append("\n");
+			for(int i = 0; i < table.getRowCount(); i++)
+			{
+				for(int j = 0; j < table.getColumnCount(); j++)
+				{
+					csvFile.append(String.valueOf(table.getValueAt(i, j)));
+					csvFile.append(delimiter);
+						
+				}
+				csvFile.append("\n");
+			}
+			csvFile.flush();
+			csvFile.close();
+			
+			}
+			catch(FileNotFoundException f)
+			{
+				f.printStackTrace();
+			}
+			catch (IOException e1)
+			{
+				e1.printStackTrace();
+			}
 	}
 	
 }
