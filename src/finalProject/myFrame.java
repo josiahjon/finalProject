@@ -80,21 +80,21 @@ public class myFrame extends JFrame implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		//when user selects load roster. User selects csv file then it gets placed into the arraylist "roster"
-		if(e.getSource()==loadARoster) {
+		if(e.getSource() == loadARoster) {
 			loadRoster();
 		}
 		
 		//for when the user clicks on the other menu options
-		if(e.getSource()==addAttendance) {
+		if(e.getSource() == addAttendance) {
 			createAttendance();
 		}
-		if(e.getSource()==save) {
+		if(e.getSource() == save) {
 			saveRoster();
 		}
-		if(e.getSource()==plotData) {
+		if(e.getSource() == plotData) {
 			System.out.println("clicked plotdata");
 		}
-		if(e.getSource()==aboutTeam) {
+		if(e.getSource() == aboutTeam) {
 			//need to gather teams info then update this 
 			JOptionPane.showMessageDialog(aboutTeam, "Here is where the info about the team goes");
 		}
@@ -244,8 +244,7 @@ public class myFrame extends JFrame implements ActionListener{
 			for(int i = 0; i < table.getRowCount(); i++) {
 				if(!table.getValueAt(i, attendanceDays + 5).equals("0"))
 					studentTotal++;
-					attendees += table.getValueAt(i, 1) + " " + table.getValueAt(i, 2) + ", connected for " + 
-								table.getValueAt(i, attendanceDays + 5) + " minute(s).\n";
+					attendees += table.getValueAt(i, 1) + " " + table.getValueAt(i, 2) + ", connected for " + table.getValueAt(i, attendanceDays + 5) + " minute(s).\n";
 			}
 			JOptionPane.showMessageDialog(this, "Data loaded for " + studentTotal + " user(s) in the roster.\n" + 
 											unlistedStudents + " additional attendee(s) was found.\n" + attendees);
@@ -259,25 +258,14 @@ public class myFrame extends JFrame implements ActionListener{
 		try
 		{
 			FileWriter csvFile = new FileWriter(userInput);
-			csvFile.append("ID");
-			csvFile.append(delimiter);
-			csvFile.append("First Name");
-			csvFile.append(delimiter);
-			csvFile.append("Last Name");
-			csvFile.append(delimiter);
-			csvFile.append("Program");
-			csvFile.append(delimiter);
-			csvFile.append("Level");
-			csvFile.append(delimiter);
-			csvFile.append("ASURITE");
-			csvFile.append(delimiter);
-			csvFile.append("Date");
-			csvFile.append("\n");
-			for(int i = 0; i < table.getRowCount(); i++)
+			for(int i = -1; i < table.getRowCount(); i++)
 			{
 				for(int j = 0; j < table.getColumnCount(); j++)
 				{
-					csvFile.append(String.valueOf(table.getValueAt(i, j)));
+					if(i == -1)
+						csvFile.append(String.valueOf(table.getColumnName(j)));
+					else
+						csvFile.append(String.valueOf(table.getValueAt(i, j)));
 					csvFile.append(delimiter);
 						
 				}
