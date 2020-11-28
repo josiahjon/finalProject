@@ -26,7 +26,6 @@ public class myFrame extends JFrame implements ActionListener{
 	File file;
 	Scanner fileIn;
 	int response;
-	int attendanceDays;
 	JFileChooser chooser = new JFileChooser("");
 	public static final String delimiter = ",";
 	
@@ -87,36 +86,7 @@ public class myFrame extends JFrame implements ActionListener{
 		
 		//for when the user clicks on the other menu options
 		if(e.getSource()==addAttendance) {
-			//System.out.println("clicked attendance");
-			Object[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"};
-			String month = (String)JOptionPane.showInputDialog(this, "Choose a Month", "Select Month",
-					JOptionPane.PLAIN_MESSAGE, null, months, "Jan");
-			String day;
-			if(month.matches("Jan|Mar|May|July|Aug|Oct|Dec")) {
-				Object[] days = new Object[31];
-				for (int i = 1; i <= 31; i++)
-					days[i-1] = "" + i;
-				day = (String)JOptionPane.showInputDialog(this, "Choose a Day", "Select Day",
-						JOptionPane.PLAIN_MESSAGE, null, days, "1");
-				createAttendance(month, day);
-			}
-			else if (month.matches("Apr|Jun|Sept|Nov")){
-				Object[] days = new Object[30];
-				for (int i = 1; i <= 30; i++)
-					days[i-1] = "" + i;
-				day = (String)JOptionPane.showInputDialog(this, "Choose a Day", "Select Day",
-							JOptionPane.PLAIN_MESSAGE, null, days, "1");
-				createAttendance(month, day);
-			}
-			else if (month.matches("Feb")) {
-				Object[] days = new Object[29];
-				for (int i = 1; i <= 29; i++)
-					days[i-1] = "" + i;
-				day = (String)JOptionPane.showInputDialog(this, "Choose a Day", "Select Day",
-							JOptionPane.PLAIN_MESSAGE, null, days, "1");
-				createAttendance(month, day);
-			}
-			
+			createAttendance();
 		}
 		if(e.getSource()==save) {
 			saveRoster();
@@ -187,48 +157,100 @@ public class myFrame extends JFrame implements ActionListener{
 		revalidate();
 	}
 	
-	private void loadAttendance(int attendanceDays) {
+	private int loadAttendance(int attendanceDays, String month, String day) {
 		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		response = chooser.showOpenDialog(null);
 		if(response == JFileChooser.APPROVE_OPTION) {
 			file = chooser.getSelectedFile();
+			int unlistedStudents = 0;
 			try {
 				
 		         FileReader fr = new FileReader(file);
 		         BufferedReader br = new BufferedReader(fr);
 		         String line = br.readLine();
+		         
+		         this.table.addColumn(month + " " + day);
+		 		 for(int i = 0; i < table.getRowCount(); i++) 
+		 			table.setValueAt(0, i, attendanceDays + 5);
+		         
 		         while(line != null) {
 		            String[] tempArray = line.split(delimiter);
 		            
 		        	String asurite = tempArray[0];
 		        	int minutes = Integer.parseInt(tempArray[1]);
+		        	boolean studentFound = false;
 		            for(int i = 0; i < table.getRowCount(); i++) {
 		            	if(table.getValueAt(i, 5).equals(asurite)) {
 		            		int attendTime = (int) table.getValueAt(i, attendanceDays + 5);
 		            		table.setValueAt(attendTime + minutes, 
 		            				i, attendanceDays + 5);
+		            		studentFound = true;
 		            	}
 		            }
+		            if (!studentFound)
+		            	unlistedStudents++;
 		            
 		            line = br.readLine();
 		         }
 			br.close();
+			return unlistedStudents;
 			} catch (FileNotFoundException f) {
 				f.printStackTrace();
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
 		}
+		return -1;
 	}
 	
-	private void createAttendance(String month, String day) {
-		this.table.addColumn(month + " " + day);
+	private void createAttendance(/*String month, String day*/) {
+		int attendanceDays = table.getColumnCount() - 6;
+		Object[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"};
+		String month = (String)JOptionPane.showInputDialog(this, "Choose a Month", "Select Month",
+				JOptionPane.PLAIN_MESSAGE, null, months, "Jan");
+		String day;
+		Object[] days = new Object[31];
+		
+		if (month == null)
+			return;
+		
+		else if (month.matches("Feb")) {
+			for (int i = 1; i <= 29; i++)
+				days[i-1] = "" + i;
+		}
+		else if (month.matches("Apr|Jun|Sept|Nov")){
+			for (int i = 1; i <= 30; i++)
+				days[i-1] = "" + i;
+		}
+		else {
+			for (int i = 1; i <= 31; i++)
+				days[i-1] = "" + i;
+		}
+		
+		day = (String)JOptionPane.showInputDialog(this, "Choose a Day", "Select Day",
+				JOptionPane.PLAIN_MESSAGE, null, days, "1");
+			
+		if (day == null) 
+			return;
+		
 		attendanceDays++;
-		for(int i = 0; i < table.getRowCount(); i++) 
-			table.setValueAt(0, i, attendanceDays + 5);
+		int unlistedStudents = loadAttendance(attendanceDays, month, day);
 		
-		loadAttendance(attendanceDays);
-		
+		if (unlistedStudents == -1)
+			JOptionPane.showMessageDialog(this, "There was an error loading your file", "File Read Error", JOptionPane.ERROR_MESSAGE);
+		else {
+			String attendees = "";
+			int studentTotal = unlistedStudents;
+			for(int i = 0; i < table.getRowCount(); i++) {
+				if(!table.getValueAt(i, attendanceDays + 5).equals("0"))
+					studentTotal++;
+					attendees += table.getValueAt(i, 1) + " " + table.getValueAt(i, 2) + ", connected for " + 
+								table.getValueAt(i, attendanceDays + 5) + " minute(s).\n";
+			}
+			JOptionPane.showMessageDialog(this, "Data loaded for " + studentTotal + " user(s) in the roster.\n" + 
+											unlistedStudents + " additional attendee(s) was found.\n" + attendees);
+		}
+			
 	}
 	
 	private void saveRoster() {
