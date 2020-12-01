@@ -96,7 +96,7 @@ public class myFrame extends JFrame implements ActionListener{
 		}
 		if(e.getSource() == aboutTeam) {
 			//need to gather teams info then update this 
-			JOptionPane.showMessageDialog(aboutTeam, "Here is where the info about the team goes");
+			JOptionPane.showMessageDialog(aboutTeam, "Members of the team: Josiah Talebi, (insert names here)");
 		}
 	}
 

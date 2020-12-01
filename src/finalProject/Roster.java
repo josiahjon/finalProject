@@ -20,6 +20,7 @@ public class Roster {
 	@Override
 	public String toString() {
 		return Id + firstName + lastName + degree + graduateLevel + logIn;
+		
 	}
 	
 	public int getId() {
